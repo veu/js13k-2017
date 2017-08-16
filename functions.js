@@ -88,14 +88,14 @@ const transition = async () => {
   onclick = onkeydown = () => {};
 
   curtain.classList.toggle('black');
-  await wait(500);
+  await wait(700);
 
   draggables = [];
   ++currentScreen;
   reset();
 
   curtain.classList.toggle('black');
-  await wait(500);
+  await wait(700);
 };
 
 const hasHitCircle = (e, a, b, r) => {
