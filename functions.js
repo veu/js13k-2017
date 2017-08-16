@@ -5,7 +5,8 @@ const ctx = canvas.getContext('2d');
 const width = 640;
 const height = 360;
 
-let currentScreen = 0;
+const startScreen = +document.location.hash.substr(1);
+let currentScreen = startScreen > 0 && startScreen < 20 ? startScreen : 0;
 let scale;
 let offsetX, offsetY;
 
@@ -96,6 +97,7 @@ const transition = async () => {
 
   curtain.classList.toggle('black');
   await wait(700);
+  document.location.hash = '#' + currentScreen;
 };
 
 const hasHitCircle = (e, a, b, r) => {
