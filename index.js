@@ -13,6 +13,40 @@ const screens = [
     onclick = transition;
   },
   (() => {
+    let line, first = true;
+
+    return () => {
+      if (first) {
+          first = false;
+          line = new Draggable(-40, -20, {
+            isHit: function (e) {
+              return hasHitCircle(e, this.x, this.y, 20);
+            },
+            move: function (pos) {
+              this.x = pos.x - width / 2 + 10;
+              reset();
+            },
+            render: function () {
+              drawLine(this.x, this.y, [-12, -14, -12, 14]);
+              drawText('You', 'left', -87 + this.x, 40);
+              drawText('are lost', 'left', -21, 40);
+            }
+          });
+      }
+
+      ctx.strokeStyle = Math.abs(line.x) < 2 ? '#fd9' : '#fff';
+
+      line.render();
+      drawLine(0, -20, [-12, -14, 12, 0, -12, 14]);
+
+      onclick = async e => {
+        if (Math.abs(line.x) < 2 && hasHitCircle(e, 0, -20, 16)) {
+          transition();
+        }
+      };
+    }
+  })(),
+  (() => {
     let s = 5;
     return () => {
       ctx.scale(s, s);
@@ -23,11 +57,9 @@ const screens = [
         if (e.keyCode === 189 && s > 1) {
           --s;
           reset();
-        }
-      };
-      onclick = async e => {
-        if (s === 1 && hasHitCircle(e, 0, -20, 16)) {
-          transition();
+          if (s === 1) {
+            transition();
+          }
         }
       }
     };

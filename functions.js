@@ -5,7 +5,7 @@ const ctx = canvas.getContext('2d');
 const width = 640;
 const height = 360;
 
-let currentScreen = 2;
+let currentScreen = 0;
 let scale;
 let offsetX, offsetY;
 
