@@ -89,14 +89,14 @@ const transition = async () => {
   onclick = onkeydown = () => {};
 
   curtain.classList.toggle('black');
-  await wait(700);
+  await wait(1000);
 
   draggables = [];
   ++currentScreen;
   reset();
 
   curtain.classList.toggle('black');
-  await wait(700);
+  await wait(1000);
   document.location.hash = '#' + currentScreen;
 };
 
