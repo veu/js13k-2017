@@ -47,6 +47,41 @@ const screens = [
     }
   })(),
   (() => {
+    let i, a = first = 1, s, text = '';
+    return () => {
+      if (first) {
+        first = 0;
+        i = setInterval(() => { a = !a; reset()}, 800);
+      }
+
+      ctx.strokeStyle = s === 1 ? '#fd9' : '#fff';
+      drawTriangle(0, -20);
+      a && drawText('|', 'left', ctx.measureText(text).width - 90, 37);
+      drawText(text, 'left', -88, 40);
+      onkeydown = e => {
+        if (e.keyCode == 8) {
+          text = text.slice(0, -1);
+        } else {
+          let letter = String.fromCharCode(e.keyCode).toLowerCase();
+          if (letter != ' ' && (letter < 'a' || letter > 'z')) {
+            return;
+          }
+          if (e.shiftKey) {
+            letter = letter.toUpperCase();
+          }
+          text += letter;
+
+          if (text == 'You are lost') {
+            s = 1;
+            transition();
+          }
+        }
+
+        reset();
+      };
+    };
+  })(),
+  (() => {
     let s = 5;
     return () => {
       ctx.scale(s, s);
