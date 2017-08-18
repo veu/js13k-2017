@@ -48,10 +48,11 @@ const drawLine = (x, y, parts) => {
 };
 
 const drawPolygon = (x, y, parts) => {
+    const last = parts.length - 1;
     ctx.save();
     ctx.translate(x, y);
-    ctx.moveTo(parts[4], parts[5]);
-    for (var i = 0; i < parts.length; i += 2) {
+    ctx.moveTo(parts[last - 1], parts[last]);
+    for (var i = 0; i < last; i += 2) {
       ctx.lineTo(parts[i], parts[i + 1]);
     }
     ctx.stroke();

@@ -100,7 +100,7 @@ const screens = [
     };
   })(),
   () => {
-    drawTriangle(0, -20);
-    drawText('Nothing here yet', 'center', 0, 40);
+    drawPolygon(0, -20, [-14, -14, -14, 14, 14, 14, 14, -14]);
+    drawText('You are no longer lost', 'center', 0, 40);
   }
 ];
