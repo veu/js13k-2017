@@ -68,6 +68,15 @@ const drawText = (text, align, x, y) => {
   ctx.fillText(text, x, y);
 };
 
+const drawEllipse = (x, y, rx, ry) => {
+  ctx.beginPath();
+  ctx.save();
+  ctx.scale(rx / ry, 1);
+  ctx.arc(x, y, ry, 0, 7, 0);
+  ctx.fill();
+  ctx.restore();
+};
+
 const drawMessage = text => {
   ctx.fillStyle = '#000';
   ctx.fillRect(-width / 2, -height / 2, width, height);

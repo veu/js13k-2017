@@ -99,8 +99,41 @@ const screens = [
       }
     };
   })(),
+  (() => {
+    let i, first = 1, s = t = u = 0;
+    return () => {
+      if (first) {
+        first = 0;
+        i = setInterval(() => { ++t; s && ++u; reset() }, 33);
+      }
+      const a = Math.sin(t / 24);
+      const b = Math.sin((t + 6) / 24);
+      const c = Math.sin(t / 30);
+      ctx.save();
+      ctx.rotate(c / 30 % 20);
+      ctx.strokeStyle = s ? '#fd9' : '#fff';
+      drawTriangle(0, -20 + a * 10 + u / 2);
+      ctx.restore();
+      ctx.save();
+      ctx.rotate(c / 33 % 20);
+      drawText('You are lost', 'center', 0, 40 + b * 11 + u / 2);
+      ctx.restore();
+      ctx.fillStyle = '#000';
+      drawEllipse(120, 120, 20, 10);
+      ctx.fillStyle = 'rgba(36,36,36,.7)';
+      drawEllipse(120, 120 - u, 20, 10);
+      onclick = async e => {
+        if (hasHitCircle(e, 240, 120, 20)) {
+          s = 1;
+          await wait(2000);
+          clearInterval(i);
+          transition();
+        }
+      };
+    };
+  })(),
   () => {
     drawPolygon(0, -20, [-14, -14, -14, 14, 14, 14, 14, -14]);
     drawText('You are no longer lost', 'center', 0, 40);
-  }
+  },
 ];
