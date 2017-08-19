@@ -123,7 +123,7 @@ const screens = [
       ctx.fillStyle = 'rgba(36,36,36,.7)';
       drawEllipse(120, 120 - u, 20, 10);
       onclick = async e => {
-        if (hasHitCircle(e, 240, 120, 20)) {
+        if (!s && hasHitCircle(e, 240, 120, 20)) {
           s = 1;
           await wait(2000);
           clearInterval(i);
