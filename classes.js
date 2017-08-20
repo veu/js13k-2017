@@ -34,3 +34,10 @@ class Draggable {
     draggables.push(this);
   }
 }
+
+class Screen {
+  constructor({init, render}) {
+    this.init = init || (() => {});
+    this.render = render;
+  }
+}

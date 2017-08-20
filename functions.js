@@ -33,7 +33,7 @@ const reset = onresize = onload = () => {
   ctx.shadowBlur = 2;
   ctx.shadowOffsetX = ctx.shadowOffsetY = 2;
 
-  screens[currentScreen]();
+  screens[currentScreen].render();
 };
 
 const drawLine = (x, y, parts) => {
@@ -103,6 +103,7 @@ const transition = async () => {
 
   draggables = [];
   ++currentScreen;
+  screens[currentScreen].init();
   reset();
 
   curtain.classList.toggle('black');
