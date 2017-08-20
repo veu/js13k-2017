@@ -1,11 +1,9 @@
 const screens = [
   new Screen({
-    init: () => {
-      onclick = async e => {
-        if (hasHitCircle(e, 0, -20, 16)) {
-          transition();
-        }
-      };
+    onclick: function (e) {
+      if (hasHitCircle(e, 0, -20, 16)) {
+        transition();
+      }
     },
     render: () => {
       drawTriangle(0, -20);
@@ -13,19 +11,18 @@ const screens = [
     },
   }),
   new Screen({
-    init: () => onclick = transition,
+    onclick: () => transition(),
     render: () => drawMessage('Oh, you did that. Next time won’t be that easy!')
   }),
   new Screen({
     init: function () {
-
       this.line = new Draggable(-40, -20, {
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
         },
         move: function (pos) {
           this.x = pos.x - width / 2 + 10;
-          if (!this.s && Math.abs(this.x) < 2) {
+          if (Math.abs(this.x) < 2) {
             this.s = 1;
             transition();
           }
@@ -49,29 +46,28 @@ const screens = [
       this.a = 1;
       this.text = '';
       this.i = setInterval(() => { this.a = !this.a; reset()}, 800);
-
-      onkeydown = e => {
-        if (e.keyCode == 8) {
-          this.text = this.text.slice(0, -1);
-        } else {
-          let letter = String.fromCharCode(e.keyCode).toLowerCase();
-          if (letter != ' ' && (letter < 'a' || letter > 'z')) {
-            return;
-          }
-          if (e.shiftKey) {
-            letter = letter.toUpperCase();
-          }
-          this.text += letter;
-
-          if (!this.s && this.text == 'You are lost') {
-            this.s = 1;
-            clearInterval(this.i);
-            transition();
-          }
+    },
+    onkeydown: function (e) {
+      if (e.keyCode == 8) {
+        this.text = this.text.slice(0, -1);
+      } else {
+        let letter = String.fromCharCode(e.keyCode).toLowerCase();
+        if (letter != ' ' && (letter < 'a' || letter > 'z')) {
+          return;
         }
+        if (e.shiftKey) {
+          letter = letter.toUpperCase();
+        }
+        this.text += letter;
 
-        reset();
-      };
+        if (this.text == 'You are lost') {
+          this.s = 1;
+          clearInterval(this.i);
+          transition();
+        }
+      }
+
+      reset();
     },
     render: function () {
       ctx.strokeStyle = this.s ? '#fd9' : '#fff';
@@ -83,16 +79,18 @@ const screens = [
   new Screen({
     init: function () {
       this.s = 5;
-
-      onkeydown = e => {
-        if (e.keyCode === 189 && this.s > 1) {
-          --this.s;
-          reset();
-          if (this.s === 1) {
-            transition();
-          }
+    },
+    onkeydown: function (e) {
+      if (e.keyCode === 187) {
+        ++this.s;
+      }
+      if (e.keyCode === 189) {
+        --this.s;
+        if (this.s === 1) {
+          transition();
         }
       }
+      reset();
     },
     render: function () {
       ctx.scale(this.s, this.s);
@@ -105,6 +103,14 @@ const screens = [
     init: function () {
       this.s = this.t = this.u = 0;
       this.i = setInterval(() => { ++this.t; this.s && ++this.u; reset() }, 33);
+    },
+    onclick: async function(e) {
+      if (!this.s && hasHitCircle(e, 240, 120, 20)) {
+        this.s = 1;
+        await wait(2000);
+        clearInterval(this.i);
+        transition();
+      }
     },
     render: function () {
       const a = Math.sin(this.t / 24);
@@ -123,14 +129,6 @@ const screens = [
       drawEllipse(120, 120, 20, 10);
       ctx.fillStyle = 'rgba(36,36,36,.7)';
       drawEllipse(120, 120 - this.u, 20, 10);
-      onclick = async e => {
-        if (!this.s && hasHitCircle(e, 240, 120, 20)) {
-          this.s = 1;
-          await wait(2000);
-          clearInterval(this.i);
-          transition();
-        }
-      };
     }
   }),
   new Screen({

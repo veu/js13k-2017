@@ -3,7 +3,7 @@ let dragging = false;
 
 onmousedown = e => {
   draggables.some(draggable => {
-    if (draggable.isHit(e)) {
+    if (!transitioning && draggable.isHit(e)) {
       dragging = draggable;
       const pos = getScreenPos(e);
       return true;
@@ -22,7 +22,6 @@ onmouseup = onmouseout = onmouseleave = e => {
   dragging = false;
 };
 
-
 class Draggable {
   constructor(x, y, {isHit, move, render, start}) {
     this.x = x;
@@ -35,9 +34,19 @@ class Draggable {
   }
 }
 
+for (const event of ['onclick', 'onkeydown']) {
+  window[event] = e => {
+    if (!transitioning && screens[currentScreen][event]) {
+      screens[currentScreen][event](e);
+    }
+  };
+}
+
 class Screen {
-  constructor({init, render}) {
+  constructor({init, render, onclick, onkeydown}) {
     this.init = init || (() => {});
     this.render = render;
+    this.onclick = onclick;
+    this.onkeydown = onkeydown;
   }
 }

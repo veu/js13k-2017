@@ -9,6 +9,7 @@ const startScreen = +document.location.hash.substr(1);
 let currentScreen = startScreen > 0 && startScreen < 20 ? startScreen : 0;
 let scale;
 let offsetX, offsetY;
+let transitioning;
 
 const reset = onresize = onload = () => {
   scale = Math.min(innerWidth / width, innerHeight / height);
@@ -96,12 +97,13 @@ const wait = async (time) => {
 };
 
 const transition = async () => {
-  onclick = onkeydown = () => {};
+  transitioning = 1;
+  draggables = [];
+  dragging = false;
 
   curtain.classList.toggle('black');
   await wait(1000);
 
-  draggables = [];
   ++currentScreen;
   screens[currentScreen].init();
   reset();
@@ -109,6 +111,7 @@ const transition = async () => {
   curtain.classList.toggle('black');
   await wait(1000);
   document.location.hash = '#' + currentScreen;
+  transitioning = 0;
 };
 
 const hasHitCircle = (e, a, b, r) => {
