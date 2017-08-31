@@ -132,6 +132,64 @@ const screens = [
     }
   }),
   new Screen({
+    init: function () {
+      this.n = [];
+      for (let i = 8; i--;) {
+        this.n.push({x: (i/7)*400-250+Math.random()*100, y: -10+Math.random()*20, m: .5 + Math.random() / 2})
+      }
+      this.n.sort((a, b) => a.m - b.m);
+      this.i = setInterval(() => {
+        this.n.forEach(n => n.m += Math.max(1.5 - n.m, 0) / 60);
+        reset();
+      }, 33);
+    },
+    onclick: function (e) {
+      const {x, y} = getScreenPos(e);
+      this.n = this.n.filter(n => {
+        if (Math.abs(n.x - x + width / 2) < (1+n.m) * 25 && Math.abs(n.y - y + height / 2) < (1+n.m) * 40) {
+          n.m = Math.max(n.m - .3 - Math.random() * .7, 0);
+          n.h = 20;
+        }
+        return n.m;
+      });
+      this.n.sort((a, b) => a.m - b.m);
+      if (!this.n.length) {
+        transition();
+      }
+    },
+    render: function () {
+      ctx.strokeStyle = this.n.length ? '#fff' : '#fd9';
+      drawTriangle(0, -20);
+      drawText('You are lost', 'center', 0, 40);
+
+      for (const n of this.n) {
+        n.h = Math.max(0, n.h - 1);
+
+        ctx.save();
+        ctx.translate(n.x, n.y);
+        ctx.scale(1+n.m,2*(1+n.m));
+
+        ctx.beginPath();
+        ctx.moveTo(0,-20);
+        ctx.lineTo(-25,20);
+        ctx.quadraticCurveTo(0,26,25,20);
+
+        const gradient = ctx.createRadialGradient(0, -10, 90, 0, -20, 0);
+        gradient.addColorStop(1, `rgb(${50+n.m*150|0},${50+n.m*150|0},${50+n.m*150|0})`);
+        gradient.addColorStop(0, `rgb(${50+n.m*50|0},${50+n.m*50|0},${50+n.m*50|0})`);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        ctx.fillStyle = '#000';
+        ctx.scale(1.5,n.h?.2:.5);
+        ctx.fillText('.', 3, 0);
+        ctx.fillText('.', -3, 0);
+
+        ctx.restore();
+      }
+    }
+  }),
+  new Screen({
     render: () => {
       drawPolygon(0, -20, [-14, -14, -14, 14, 14, 14, 14, -14]);
       drawText('You are no longer lost', 'center', 0, 40);
