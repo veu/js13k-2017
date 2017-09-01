@@ -52,6 +52,7 @@ const screens = [
         },
         move: function (pos) {
           this.x = pos.x - width / 2 + 10;
+          clamp(this);
           if (Math.abs(this.x) < 2) {
             this.s = 1;
             transition();
@@ -160,6 +161,69 @@ const screens = [
       ctx.fillStyle = 'rgba(36,36,36,.7)';
       drawEllipse(120, 120 - this.u, 20, 10);
     }
+  }),
+  new Screen({
+    init: function () {
+      this.d = [];
+      for (let i=84;i--;) {
+        this.d.push({
+          x: i/83*(width-80)-width/2+20+Math.random()*20,
+          y: 90 + Math.random() * 20,
+          i
+        });
+      }
+      this.t = new Draggable(-20, -20, {
+        isHit: function (e) {
+          return hasHitCircle(e, this.x, this.y, 20);
+        },
+        move: function (pos) {
+          this.x = pos.x - width / 2 + 4;
+          this.y = pos.y - height / 2;
+          clamp(this);
+          reset();
+        },
+        render: function () {
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 1.5;
+          drawTriangle(this.x, this.y);
+          ctx.fillStyle = '#fd9';
+          this.s.forEach((_,i) => {
+            let x, y;
+            if (i < 28) {
+              x = this.x - 12;
+              y = this.y - 14 + +i;
+            } else if (i < 56) {
+              x = this.x - 12 + (i - 28) / 7 * 6;
+              y = this.y - 14 + (i - 28) / 2;
+            } else {
+              x = this.x - 12 + (i - 56) / 7 * 6;
+              y = this.y + 14 - (i - 56) / 2;
+            }
+            drawEllipse(x, y, 1.25);
+          });
+          ctx.fillStyle = '#fff';
+        }
+      });
+      this.t.s = [];
+    },
+    render: function () {
+      this.t.render();
+      drawText('You are lost', 'center', 0, 40);
+
+      this.d = this.d.filter(d => {
+        if (Math.hypot(this.t.x - d.x, this.t.y - d.y) < 10) {
+          this.t.s[d.i] = 1;
+          return 0;
+        }
+        ctx.fillStyle = 'rgba(255,221,153,.7)';
+        drawEllipse(d.x, d.y, 1.25);
+        return 1;
+      });
+
+      if (!this.d.length) {
+        transition();
+      }
+    },
   }),
   new Screen({
     init: function () {

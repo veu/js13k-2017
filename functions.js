@@ -69,7 +69,7 @@ const drawText = (text, align, x, y) => {
   ctx.fillText(text, x, y);
 };
 
-const drawEllipse = (x, y, rx, ry) => {
+const drawEllipse = (x, y, rx, ry=rx) => {
   ctx.beginPath();
   ctx.save();
   ctx.scale(rx / ry, 1);
@@ -89,6 +89,11 @@ const drawMessage = text => {
 const getScreenPos = e => {
   return {x: (e.pageX - offsetX) / scale, y: (e.pageY - offsetY) / scale};
 };
+
+const clamp = pos => {
+  pos.x = Math.min(-20 + width / 2, Math.max(20 - width / 2, pos.x));
+  pos.y = Math.min(-20 + height / 2, Math.max(20 - height / 2, pos.y));
+}
 
 const wait = async (time) => {
   return new Promise(resolve => {
