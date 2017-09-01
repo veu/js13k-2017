@@ -51,6 +51,7 @@ const drawPolygon = (x, y, parts) => {
     const last = parts.length - 1;
     ctx.save();
     ctx.translate(x, y);
+    ctx.beginPath();
     ctx.moveTo(parts[last - 1], parts[last]);
     for (var i = 0; i < last; i += 2) {
       ctx.lineTo(parts[i], parts[i + 1]);
@@ -105,12 +106,12 @@ const transition = async () => {
 
   ++currentScreen;
   screens[currentScreen].init();
+  transitioning = 0;
   reset();
 
   curtain.classList.toggle('black');
   await wait(1000);
   document.location.hash = '#' + currentScreen;
-  transitioning = 0;
 };
 
 const hasHitCircle = (e, a, b, r) => {

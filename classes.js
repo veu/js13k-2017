@@ -13,6 +13,10 @@ onmousedown = e => {
 
 onmousemove = e => {
   if (!dragging) {
+    if (!transitioning && screens[currentScreen].onmousemove) {
+      screens[currentScreen].onmousemove(e);
+    }
+
     return;
   }
   dragging.move(getScreenPos(e));
@@ -43,10 +47,11 @@ for (const event of ['onclick', 'onkeydown']) {
 }
 
 class Screen {
-  constructor({init, render, onclick, onkeydown}) {
+  constructor({init, render, onclick, onkeydown, onmousemove}) {
     this.init = init || (() => {});
     this.render = render;
     this.onclick = onclick;
     this.onkeydown = onkeydown;
+    this.onmousemove = onmousemove;
   }
 }

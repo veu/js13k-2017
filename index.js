@@ -22,6 +22,30 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      this.p = {x: 10, y: -20};
+    },
+    onmousemove: function (e) {
+      const {x, y} = getScreenPos(e);
+      this.p = {x: width / 2 - x, y: height / 2 - y};
+      if (Math.abs(this.p.x) < 1 && Math.abs(this.p.y) < 1) {
+        this.p = {x: 0, y: 0};
+        transition();
+      }
+
+      reset();
+    },
+    render: function () {
+      ctx.globalAlpha = .5;
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = transitioning ? '#fd9' : '#fff';
+      drawTriangle(0, -20);
+      drawTriangle(this.p.x, this.p.y - 20);
+      drawText('You are lost', 'center', 0, 40);
+      drawText('You are lost', 'center', this.p.x, this.p.y + 40);
+    },
+  }),
+  new Screen({
+    init: function () {
       this.line = new Draggable(-40, -20, {
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
