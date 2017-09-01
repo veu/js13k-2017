@@ -1,5 +1,6 @@
+let d1;
 const screens = [
-  new Screen({
+  d1 = new Screen({
     onclick: function (e) {
       if (hasHitCircle(e, 0, -20, 16)) {
         transition();
@@ -13,6 +14,11 @@ const screens = [
   new Screen({
     onclick: () => transition(),
     render: () => drawMessage('Oh, you did that. Next time won’t be that easy!')
+  }),
+  d1,
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('Okay, it was literally just as easy. No more!')
   }),
   new Screen({
     init: function () {
