@@ -27,6 +27,7 @@ const reset = onresize = onload = () => {
 const drawLine = (x, y, parts) => {
       ctx.save();
       ctx.translate(x, y);
+      ctx.beginPath();
       ctx.moveTo(parts[0], parts[1]);
       for (var i = 2; i < parts.length; i += 2) {
         ctx.lineTo(parts[i], parts[i + 1]);

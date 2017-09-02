@@ -227,6 +227,86 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      const startAnim = () => {
+        const i = setInterval(() => {
+          this.o += 2;
+          this.e.y += 2;
+          if (this.o == 240) {
+            clearInterval(i);
+            transition();
+          }
+          reset();
+        }, 33);
+      };
+
+      this.o = 0;
+      this.first = 1;
+      this.e = new Draggable(0, 34, {
+        isHit: function (e) {
+          return !this.h && hasHitCircle(e, this.x, this.y, 10);
+        },
+        render: function () {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(.5);
+          drawText('e', 'center', 0, 6);
+          ctx.restore();
+        },
+        move: function (pos) {
+          if (this.h) return;
+          this.x = pos.x - width / 2;
+          this.y = pos.y - height / 2;
+          clamp(this);
+          if (Math.hypot(this.x - 147, this.y - 14) < 4) {
+            this.x = this.h = 147;
+            this.y = 14;
+            startAnim();
+          }
+
+          reset();
+        }
+      });
+    },
+    render: function () {
+      const left = -ctx.measureText('You are lost').width / 2;
+      if (this.first) {
+        this.first = 0;
+        this.e.x = left + ctx.measureText('You ar').width + ctx.measureText('e').width / 2;
+      }
+
+      ctx.save();
+      ctx.strokeStyle = '#aaa';
+      ctx.lineWidth = 1.5;
+      drawLine(-8,0,[0,-200,0,200-this.o]);
+      drawLine(150,0,[0,-200,0,this.o]);
+      ctx.beginPath();
+      ctx.arc(150,5+this.o,5,Math.PI*3/2,2.5,0);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(-8,205-this.o,5,Math.PI*3/2,2.5,0);
+      ctx.stroke();
+      ctx.restore();
+
+      drawTriangle(0, 220-this.o);
+
+      drawText('You ar', 'left', left, 40);
+      drawText('lost', 'left', left + ctx.measureText('You are ').width, 40);
+      this.e.render();
+
+      ctx.save();
+      ctx.strokeStyle = '#999';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(150,5 + this.o,5,Math.PI/2,3,0);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(-8,205 - this.o,5,Math.PI/2,3,0);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }),
+  new Screen({
+    init: function () {
       this.n = [];
       for (let i = 8; i--;) {
         this.n.push({x: (i/7)*400-250+Math.random()*100, y: -10+Math.random()*20, m: .5 + Math.random() / 2})
