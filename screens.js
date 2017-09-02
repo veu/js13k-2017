@@ -45,6 +45,10 @@ const screens = [
     },
   }),
   new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('Finished already? Let’s see how you handle the next one.')
+  }),
+  new Screen({
     init: function () {
       this.line = new Draggable(-40, -20, {
         isHit: function (e) {
@@ -71,6 +75,10 @@ const screens = [
       this.line.render();
       drawLine(0, -20, [-12, -14, 12, 0, -12, 14]);
     }
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('That took a bit longer. Don’t let it drag you down. ;)')
   }),
   new Screen({
     init: function () {
@@ -108,6 +116,10 @@ const screens = [
     }
   }),
   new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('No, you are!')
+  }),
+  new Screen({
     init: function () {
       this.s = 5;
     },
@@ -129,6 +141,10 @@ const screens = [
       drawTriangle(0, -20);
       drawText('You are lost', 'center', 0, 40);
     }
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('Do you get seasick?')
   }),
   new Screen({
     init: function () {
@@ -161,6 +177,10 @@ const screens = [
       ctx.fillStyle = 'rgba(36,36,36,.7)';
       drawEllipse(120, 120 - this.u, 20, 10);
     }
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('I do. I’m glad that’s over.')
   }),
   new Screen({
     init: function () {
@@ -224,6 +244,10 @@ const screens = [
         transition();
       }
     },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('What if I just hide the triangle?')
   }),
   new Screen({
     init: function () {
@@ -306,6 +330,10 @@ const screens = [
     }
   }),
   new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('Admit it, you’re hooked.')
+  }),
+  new Screen({
     init: function () {
       this.n = [];
       for (let i = 8; i--;) {
@@ -362,6 +390,10 @@ const screens = [
         ctx.restore();
       }
     }
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('Thanks for punching the Nazis. I like you. :)')
   }),
   new Screen({
     render: () => {
