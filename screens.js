@@ -125,10 +125,10 @@ const screens = [
       this.s = 5;
     },
     onkeydown: function (e) {
-      if (e.keyCode === 187) {
+      if (e.key === '+') {
         ++this.s;
       }
-      if (e.keyCode === 189) {
+      if (e.key === '-') {
         --this.s;
         if (this.s === 1) {
           transition();
