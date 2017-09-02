@@ -66,8 +66,9 @@ const screens = [
         render: function () {
           ctx.strokeStyle = this.s ? '#fd9' : '#fff';
           drawLine(this.x, this.y, [-12, -14, -12, 14]);
-          drawText('You', 'left', -87 + this.x, 40);
-          drawText('are lost', 'left', -21, 40);
+          const left = -ctx.measureText('You are lost').width / 2;
+          drawText('You', 'left', left + this.x, 40);
+          drawText('are lost', 'left', left + ctx.measureText('You ').width, 40);
         }
       });
     },
@@ -247,7 +248,7 @@ const screens = [
   }),
   new Screen({
     onclick: () => transition(),
-    render: () => drawMessage('What if I just hide the triangle?')
+    render: () => drawMessage('What if I hide the triangle?')
   }),
   new Screen({
     init: function () {
@@ -393,7 +394,7 @@ const screens = [
   }),
   new Screen({
     onclick: () => transition(),
-    render: () => drawMessage('Thanks for punching the Nazis. I like you. :)')
+    render: () => drawMessage('Thanks for punching those Nazis. I like you. :)')
   }),
   new Screen({
     render: () => {
