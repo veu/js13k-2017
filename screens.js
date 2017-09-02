@@ -290,5 +290,3 @@ const screens = [
     }
   })
 ];
-
-screens[currentScreen].init();

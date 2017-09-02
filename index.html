@@ -15,7 +15,9 @@ div.black { background-color: #000; }
 <body>
 <canvas id="main"></canvas>
 <div id="curtain"></div>
-<script src="functions.js"></script>
+<script src="globals.js"></script>
 <script src="classes.js"></script>
-<script src="index.js"></script>
+<script src="screens.js"></script>
+<script src="functions.js"></script>
+<script>screens[currentScreen].init()</script>
 </html>
