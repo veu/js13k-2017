@@ -47,11 +47,10 @@ for (const event of ['onclick', 'onkeydown']) {
 }
 
 class Screen {
-  constructor({init, render, onclick, onkeydown, onmousemove}) {
-    this.init = init || (() => {});
-    this.render = render;
-    this.onclick = onclick;
-    this.onkeydown = onkeydown;
-    this.onmousemove = onmousemove;
+  constructor(methods) {
+    for (const i in methods) {
+      this[i] = methods[i];
+    }
+    this.init = this.init || (() => {});
   }
 }

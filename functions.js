@@ -67,6 +67,12 @@ const drawEllipse = (x, y, rx, ry=rx) => {
   ctx.restore();
 };
 
+const drawRing = (x, y, r) => {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, 7, 0);
+  ctx.stroke();
+};
+
 const drawMessage = text => {
   ctx.fillStyle = '#000';
   ctx.fillRect(-width / 2, -height / 2, width, height);

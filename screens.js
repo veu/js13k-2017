@@ -145,6 +145,62 @@ const screens = [
   }),
   new Screen({
     onclick: () => transition(),
+    render: () => drawMessage('I’m excited. Aren’t you? Let’s see what’s next.')
+  }),
+  new Screen({
+    init: function () {
+      this.m = {x: 0, y: 200};
+      this.r = .2;
+    },
+    onmousemove: function (e) {
+      if (this.r > 50) return;
+      const {x, y} = getScreenPos(e);
+      this.m = {x: x - width / 2, y: y - height / 2};
+      this.r *= 1.01;
+      reset();
+    },
+    render: async function () {
+      ctx.strokeStyle = '#fff';
+
+      ctx.save();
+      ctx.beginPath();
+      this.addEyePath(-50,-15);
+      ctx.clip();
+      const rl = Math.atan2(15 + this.m.y, 50 + this.m.x);
+      drawRing(-50 + Math.cos(rl) * this.r, -15 + Math.sin(rl) * this.r, 17);
+      drawEllipse(-50 + Math.cos(rl) * this.r, -15 + Math.sin(rl) * this.r, 7);
+      ctx.restore();
+
+      ctx.save();
+      ctx.beginPath();
+      this.addEyePath(50,-15);
+      ctx.clip();
+      const rr = Math.atan2(15 + this.m.y, -50 + this.m.x);
+      drawRing(50 + Math.cos(rr) * this.r, -15 + Math.sin(rr) * this.r, 17);
+      drawEllipse(50 + Math.cos(rr) * this.r, -15 + Math.sin(rr) * this.r, 7);
+      ctx.restore();
+
+      ctx.beginPath();
+      this.addEyePath(-50,-15);
+      this.addEyePath(50,-15);
+      ctx.stroke();
+      drawText('You are lost', 'center', 0, 40);
+
+      if (this.r > 50) {
+        ctx.strokeStyle = '#fd9';
+        drawTriangle(0, -20);
+        await wait(1000);
+        transition();
+      }
+    },
+    addEyePath: function (x, y) {
+      ctx.moveTo(x-30,y);
+      ctx.quadraticCurveTo(x,y-30,x+30,y);
+      ctx.quadraticCurveTo(x,y+30,x-30,y);
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
     render: () => drawMessage('Do you get seasick?')
   }),
   new Screen({
