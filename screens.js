@@ -576,6 +576,69 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      this.r = [];
+      this.s = [];
+      this.i = setInterval(() => {
+        for (let i = 3; i--;) {
+          this.r.push({
+            x: Math.random() * 640 - 320,
+            y: -200,
+            sx: -.6 - Math.random() * .6,
+            sy: 12
+          });
+        }
+        this.r = this.r.filter(r => {
+          r.x += r.sx;
+          r.y += r.sy;
+
+          if (r.y >= 4 && r.y < 4 + 12 && Math.abs(r.x) < ctx.measureText('You are lost').width / 2 && Math.random() < .9) {
+            this.s.push({x: r.x, y: 24, r: 1});
+            return 0;
+          }
+
+          if (r.y >= -70 && r.y < -70 + 12 && r.x >= -170 && r.x <= -145) {
+            this.s.push({x: r.x, y: -65 + (r.x + 170) / 2, r: 1});
+            return 0;
+          }
+
+          return r.y < 200;
+        });
+        this.s = this.s.filter(s => {
+          s.r += .5;
+          return s.r < 5;
+        });
+        reset();
+      }, 33);
+    },
+    onclick: async function (e) {
+      if (hasHitCircle(e, -160, -50, 16)) {
+        this.t = 1;
+        await wait(1000);
+        clearInterval(this.i);
+        transition();
+        reset();
+      }
+    },
+    render: function () {
+        if (this.t) drawTriangle(-160, -50);
+        drawText('You are lost', 'center', 0, 40);
+        ctx.strokeStyle = 'rgba(255,255,255,.2)';
+        ctx.lineWidth = 1;
+        this.r.forEach(r => {
+          drawLine(r.x,r.y,[0,0,r.sx*2,r.sy*2]);
+        });
+        ctx.strokeStyle = 'rgba(255,255,255,.05)';
+        this.s.forEach(s => {
+          drawRing(s.x,s.y,s.r);
+        });
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('I didn’t see that coming.')
+  }),
+  new Screen({
+    init: function () {
       this.n = [];
       for (let i = 8; i--;) {
         this.n.push({x: (i/7)*400-250+Math.random()*100, y: -10+Math.random()*20, m: .5 + Math.random() / 2})
