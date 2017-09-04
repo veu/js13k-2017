@@ -392,6 +392,190 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      let o = this.o = [];
+
+      class Line extends Draggable {
+          constructor(x, y, i, g, methods) {
+            super(x, y, methods);
+            this.i = i;
+            this.g = g;
+          }
+
+          isHit(e) {
+            if (this.s) return 0;
+            return hasHitCircle(e, this.x, this.y, 14);
+          }
+
+          move(pos) {
+            if (this.s) return;
+            this.x = pos.x - width / 2;
+            this.y = pos.y - height / 2;
+            clamp(this);
+            if (Math.hypot(this.x - this.g.x, this.y - this.g.y) < 2) {
+              this.s = 1;
+              this.x = this.g.x;
+              this.y = this.g.y;
+              o.push(this.i);
+            }
+            reset();
+          }
+      }
+      this.l = [
+        new Line(80, -80, 3, {x: -12, y: -21}, {
+          render: function () { drawLine(this.x, this.y, [0, -14, 0, 14]) }
+        }),
+        new Line(90, -50, 2, {x: 0, y: -13}, {
+          render: function () { drawLine(this.x, this.y, [-12, 7, 12, -7]) }
+        }),
+        new Line(50, -70, 1, {x: 0, y: -28}, {
+          render: function () { drawLine(this.x, this.y, [-12, -7, 12, 7]) }
+        })
+      ];
+    },
+    onclick: function (e) {
+      if (this.a > 200) {
+        const {x, y} = getScreenPos(e);
+        if (x >= 250 && x <= 470 && y >= 130 && y <= 160) {
+          transition();
+          clearInterval(this.i);
+        }
+      }
+    },
+    render: function () {
+      ctx.save();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(0,0,0,.2)';
+      ctx.shadowColor = 'transparent';
+      drawTriangle(0, -20);
+      ctx.restore();
+
+      this.drawManual();
+      this.l.forEach(l => l.render());
+
+      drawText('You are lost!', 'center', 0, 40);
+
+      if (this.o.length == 3) {
+        if (this.o.join('') == '123') {
+          transition();
+        } else {
+            this.o = [];
+            this.a = 1;
+            metDarkLord = 1;
+            this.i = setInterval(reset, 33);
+        }
+      }
+
+      if (this.a) {
+        this.drawDarkLord();
+        if (this.a > 200) {
+          this.drawClippy();
+        }
+      }
+    },
+    drawManual: function () {
+      ctx.save();
+      ctx.shadowColor = 'transparent';
+      ctx.translate(-width / 2, -height / 2);
+      const g = ctx.createLinearGradient(20, 20, 21, 190);
+      g.addColorStop(.4, '#ccc');
+      g.addColorStop(.5, '#aaa');
+      g.addColorStop(.51, '#eee');
+      g.addColorStop(0.6, '#ccc');
+      ctx.fillStyle = g;
+      ctx.fillRect(20, 20, 160, 180);
+      ctx.fillStyle = ctx.strokeStyle = '#222';
+      ctx.font = '10px ' + ctx.font.split(' ', 1)[1];
+      const t = ['INSTRUCTION MANUAL', '', '', '1.', '2.', '3.', '', 'NOTE: Assembling the object','in the wrong order will raise the','Dark Lord from His slumber.'];
+      for (const i in t) {
+        drawText(t[i], 'left', 35, 45 + i * 15);
+      }
+      ctx.lineWidth = 1;
+      drawLine(54,86,[-3,-3.5,3,0]);
+      drawLine(54,101,[-3,-3.5,3,0,-3,3.5]);
+      drawPolygon(54,116,[-3,-3.5,3,0,-3,3.5]);
+      ctx.restore();
+    },
+    drawDarkLord: function () {
+      ctx.save();
+      this.a = this.a ? this.a + 1 : 1;
+      ctx.fillStyle = `rgba(0,0,0,${Math.min(this.a / 300,.3)+Math.sin(this.a)*.01})`;
+      ctx.fillRect(-width / 2, -height / 2, width, height);
+
+      ctx.translate(0, 150 - Math.min(this.a, 100));
+      ctx.beginPath();
+      ctx.moveTo(-110,130);
+      ctx.quadraticCurveTo(-109,125,-100,110);
+      ctx.quadraticCurveTo(-120,70,-100,0);
+      ctx.quadraticCurveTo(-90,50,-70,70);
+
+      ctx.quadraticCurveTo(0,50,70,70);
+      ctx.quadraticCurveTo(90,50,100,0);
+      ctx.quadraticCurveTo(120,70,100,110);
+      ctx.quadraticCurveTo(109,125,110,130);
+
+      ctx.translate(0, Math.max(100 - this.a, -80));
+      ctx.moveTo(-10, 150);
+      ctx.quadraticCurveTo(-5, 90, 0, 70);
+      ctx.quadraticCurveTo(5, 90, 10, 150);
+      ctx.fill();
+      ctx.restore();
+    },
+    drawClippy: function () {
+      ctx.beginPath();
+      ctx.strokeStyle = '#ddd';
+      ctx.translate(220,-20);
+      ctx.moveTo(-24,-43);
+      ctx.quadraticCurveTo(-24,-18,-16,-18);
+      ctx.quadraticCurveTo(-8,-18,-8,-28);
+      ctx.quadraticCurveTo(-10,-48,-6,-68);
+      ctx.quadraticCurveTo(-6,-78,-14,-78);
+      ctx.quadraticCurveTo(-31,-80,-28,-28);
+      ctx.quadraticCurveTo(-26,0,-14,-2);
+      ctx.quadraticCurveTo(0,-2,-2,-22);
+      ctx.quadraticCurveTo(-4,-42,0,-44);
+      ctx.stroke();
+      drawEllipse(-7,-54,7,6);
+      drawEllipse(-23,-58,7,6);
+      ctx.fillStyle = '#333';
+      ctx.shadowColor = 'transparent';
+      drawEllipse(-7,-54,3.5,3);
+      drawEllipse(-23,-58,3.5,3);
+      ctx.strokeStyle = '#444';
+      ctx.shadowColor = 'rgba(0,0,0,.5)';
+      ctx.beginPath();
+      ctx.moveTo(-32,-65);
+      ctx.quadraticCurveTo(-28,-69,-21,-68);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-8,-65);
+      ctx.quadraticCurveTo(-4,-64,0,-60);
+      ctx.stroke();
+
+      ctx.fillStyle = '#fea';
+      ctx.fillRect(-300,-120,240,130);
+      ctx.shadowColor = 'transparent';
+      ctx.strokeRect(-300,-120,240,130);
+      fillPolygon(-62, -40, [0,0,0,-10,20,-2]);
+      drawLine(-60, -40, [0,0,20,-2,0,-10]);
+
+      ctx.fillStyle = '#000';
+      ctx.font = '16px Arial, sans-serif';
+      drawText('It looks like you’ve summoned', 'left', -290, -90);
+      drawText('the Dark Lord. Do you need', 'left', -290, -70);
+      drawText('assistance?', 'left', -290, -50);
+      drawText('Yes', 'left', -270, -10);
+      drawText('Duh', 'right', -90, -10);
+      ctx.strokeStyle = 'rgba(200,200,200,.7)';
+      ctx.strokeRect(-290,-30,40 + ctx.measureText('Yes').width,30);
+      ctx.strokeRect(-110 - ctx.measureText('Duh').width,-30,40 + ctx.measureText('Duh').width,30);
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage(metDarkLord ? '…' : 'I never read the instructions.')
+  }),
+  new Screen({
+    init: function () {
       this.n = [];
       for (let i = 8; i--;) {
         this.n.push({x: (i/7)*400-250+Math.random()*100, y: -10+Math.random()*20, m: .5 + Math.random() / 2})

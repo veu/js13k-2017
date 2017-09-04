@@ -49,6 +49,19 @@ const drawPolygon = (x, y, parts) => {
     ctx.restore();
 };
 
+const fillPolygon = (x, y, parts) => {
+    const last = parts.length - 1;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.beginPath();
+    ctx.moveTo(parts[last - 1], parts[last]);
+    for (var i = 0; i < last; i += 2) {
+      ctx.lineTo(parts[i], parts[i + 1]);
+    }
+    ctx.fill();
+    ctx.restore();
+};
+
 const drawTriangle = (x, y) => {
   drawPolygon(x, y, [-12, -14, -12, 14, 12, 0]);
 };

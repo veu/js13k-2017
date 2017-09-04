@@ -27,13 +27,12 @@ onmouseup = onmouseout = onmouseleave = e => {
 };
 
 class Draggable {
-  constructor(x, y, {isHit, move, render, start}) {
+  constructor(x, y, methods) {
     this.x = x;
     this.y = y;
-    this.isHit = isHit;
-    this.move = move;
-    this.render = render;
-    this.start = start;
+    for (const i in methods) {
+      this[i] = methods[i];
+    }
     draggables.push(this);
   }
 }
