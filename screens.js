@@ -485,7 +485,7 @@ const screens = [
       ctx.fillRect(20, 20, 160, 180);
       ctx.fillStyle = ctx.strokeStyle = '#222';
       ctx.font = '10px ' + ctx.font.split(' ', 1)[1];
-      const t = ['INSTRUCTION MANUAL', '', '', '1.', '2.', '3.', '', 'NOTE: Assembling the object','in the wrong order will raise the','Dark Lord from His slumber.'];
+      const t = ['ASSEMBLY INSTRUCTIONS', '', '', '1.', '2.', '3.', '', 'NOTE: Assembling the object','in the wrong order will raise the','Dark Lord from His slumber.'];
       for (const i in t) {
         drawText(t[i], 'left', 35, 45 + i * 15);
       }
