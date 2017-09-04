@@ -5,7 +5,6 @@ onmousedown = e => {
   draggables.some(draggable => {
     if (!transitioning && draggable.isHit(e)) {
       dragging = draggable;
-      const pos = getScreenPos(e);
       return true;
     }
   });

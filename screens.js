@@ -26,7 +26,7 @@ const screens = [
     },
     onmousemove: function (e) {
       const {x, y} = getScreenPos(e);
-      this.p = {x: width / 2 - x, y: height / 2 - y};
+      this.p = {x: -x, y: -y};
       if (Math.abs(this.p.x) < 1 && Math.abs(this.p.y) < 1) {
         this.p = {x: 0, y: 0};
         transition();
@@ -55,7 +55,7 @@ const screens = [
           return hasHitCircle(e, this.x, this.y, 20);
         },
         move: function (pos) {
-          this.x = pos.x - width / 2 + 10;
+          this.x = pos.x + 10;
           clamp(this);
           if (Math.abs(this.x) < 2) {
             this.s = 1;
@@ -154,8 +154,7 @@ const screens = [
     },
     onmousemove: function (e) {
       if (this.r > 50) return;
-      const {x, y} = getScreenPos(e);
-      this.m = {x: x - width / 2, y: y - height / 2};
+      this.m = getScreenPos(e);
       this.r *= 1.01;
       reset();
     },
@@ -254,8 +253,8 @@ const screens = [
           return hasHitCircle(e, this.x, this.y, 20);
         },
         move: function (pos) {
-          this.x = pos.x - width / 2 + 4;
-          this.y = pos.y - height / 2;
+          this.x = pos.x + 4;
+          this.y = pos.y;
           clamp(this);
           reset();
         },
@@ -335,8 +334,8 @@ const screens = [
         },
         move: function (pos) {
           if (this.h) return;
-          this.x = pos.x - width / 2;
-          this.y = pos.y - height / 2;
+          this.x = pos.x;
+          this.y = pos.y;
           clamp(this);
           if (Math.hypot(this.x - 147, this.y - 14) < 4) {
             this.x = this.h = 147;
@@ -408,8 +407,8 @@ const screens = [
 
           move(pos) {
             if (this.s) return;
-            this.x = pos.x - width / 2;
-            this.y = pos.y - height / 2;
+            this.x = pos.x;
+            this.y = pos.y;
             clamp(this);
             if (Math.hypot(this.x - this.g.x, this.y - this.g.y) < 2) {
               this.s = 1;
@@ -435,7 +434,7 @@ const screens = [
     onclick: function (e) {
       if (this.a > 200) {
         const {x, y} = getScreenPos(e);
-        if (x >= 250 && x <= 470 && y >= 130 && y <= 160) {
+        if (x >= -70 && x <= 150 && y >= -50 && y <= -20) {
           transition();
           clearInterval(this.i);
         }
@@ -652,7 +651,7 @@ const screens = [
     onclick: function (e) {
       const {x, y} = getScreenPos(e);
       this.n = this.n.filter(n => {
-        if (Math.abs(n.x - x + width / 2) < (1+n.m) * 25 && Math.abs(n.y - y + height / 2) < (1+n.m) * 40) {
+        if (Math.abs(n.x - x) < (1+n.m) * 25 && Math.abs(n.y - y) < (1+n.m) * 40) {
           n.m = Math.max(n.m - .3 - Math.random() * .7, 0);
           n.h = 20;
         }

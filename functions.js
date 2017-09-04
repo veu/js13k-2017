@@ -95,7 +95,10 @@ const drawMessage = text => {
 };
 
 const getScreenPos = e => {
-  return {x: (e.pageX - offsetX) / scale, y: (e.pageY - offsetY) / scale};
+  return {
+    x: (e.pageX - offsetX) / scale - width / 2,
+    y: (e.pageY - offsetY) / scale - height / 2
+  };
 };
 
 const clamp = pos => {
@@ -129,6 +132,6 @@ const transition = async () => {
 
 const hasHitCircle = (e, a, b, r) => {
     const {x, y} = getScreenPos(e);
-    const distance = Math.hypot(width / 2 + a - x, height / 2 + b - y);
+    const distance = Math.hypot(a - x, b - y);
     return distance <= r;
 };
