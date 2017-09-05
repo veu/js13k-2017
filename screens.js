@@ -59,6 +59,58 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      this.a = 0;
+      this.b = -2;
+    },
+    onclick: function (e) {
+      if (!hasHitCircle(e, 0, -20, 16)) return;
+      ++this.b;
+      if (this.b == 30) {
+        this.s = 1;
+        this.a = 0;
+        this.i = setInterval(async () => {
+          this.a += 4;
+          reset();
+          if (this.a > 70) {
+            clearInterval(this.i);
+            this.s = 1;
+            await wait(500);
+            transition();
+          }
+        }, 33);
+      }
+      reset();
+    },
+    render: function () {
+      if (this.s) drawTriangle(0, -20);
+      ctx.strokeStyle = this.a ? `rgba(255,255,255,${(70-this.a)/70})` : '#fff';
+      const x = Math.cos(1/3*Math.PI);
+      const y = Math.sin(1/3*Math.PI);
+      ctx.beginPath();
+      ctx.moveTo(-12-this.a, -34);
+      ctx.quadraticCurveTo(-12-this.b-this.a/2,-20,-12-this.a,-6);
+      if (this.a) {
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-12+x*this.a,-6+y*this.a);
+      }
+      ctx.quadraticCurveTo(x*(this.b+this.a/2),-13+y*(this.b+this.a/2),12+x*this.a,-20+y*this.a);
+      if (this.a) {
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12+x*this.a,-20-y*this.a);
+      }
+      ctx.quadraticCurveTo(x*(this.b+this.a/2),-27-y*(this.b+this.a/2),-12+x*this.a,-34-y*this.a);
+      ctx.stroke();
+      drawText('You are lost', 'center', 0, 40);
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('That took a bit longer. Don’t let it drag you down. ;)')
+  }),
+  new Screen({
+    init: function () {
       this.line = new Draggable(-40, -20, {
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
@@ -90,8 +142,22 @@ const screens = [
     }
   }),
   new Screen({
-    onclick: () => transition(),
-    render: () => drawMessage('That took a bit longer. Don’t let it drag you down. ;)')
+    init: function () {
+      this.d = 5;
+      this.i = setInterval(() => {
+        this.d = Math.min(this.d + 1, 999);
+        reset();
+      }, 33);
+    },
+    onclick: async function () {
+      await wait(500);
+      clearInterval(this.i);
+      transition();
+    },
+    render: function () {
+      drawMessage('Let’s increase the difficulty a bit.');
+      drawText('Difficulty: ' + this.d, 'left', -ctx.measureText('Difficulty: 999').width / 2, 40);
+    },
   }),
   new Screen({
     init: function () {
