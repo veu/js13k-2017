@@ -1,12 +1,18 @@
 let d1;
 const screens = [
   d1 = new Screen({
-    onclick: function (e) {
-      if (hasHitCircle(e, 0, -20, 16)) {
-        transition();
-      }
+    init: function () {
+      this.s = 0;
     },
-    render: () => {
+    onclick: async function (e) {
+      if (!hasHitCircle(e, 0, -20, 16)) return;
+      this.s = 1;
+      reset();
+      await wait(500);
+      transition();
+    },
+    render: function () {
+      ctx.strokeStyle = this.s ? '#fd9' : '#fff';
       drawTriangle(0, -20);
       drawText('You are lost', 'center', 0, 40);
     },
@@ -24,20 +30,23 @@ const screens = [
     init: function () {
       this.p = {x: 10, y: -20};
     },
-    onmousemove: function (e) {
+    onmousemove: async function (e) {
       const {x, y} = getScreenPos(e);
       this.p = {x: -x, y: -y};
       if (Math.abs(this.p.x) < 1 && Math.abs(this.p.y) < 1) {
         this.p = {x: 0, y: 0};
+        this.s = 1;
+        reset();
+        await wait(500);
         transition();
+      } else {
+        reset();
       }
-
-      reset();
     },
     render: function () {
       ctx.globalAlpha = .5;
       ctx.globalCompositeOperation = 'lighter';
-      ctx.strokeStyle = transitioning ? '#fd9' : '#fff';
+      ctx.strokeStyle = this.s ? '#fd9' : '#fff';
       drawTriangle(0, -20);
       drawTriangle(this.p.x, this.p.y - 20);
       drawText('You are lost', 'center', 0, 40);
@@ -54,14 +63,17 @@ const screens = [
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
         },
-        move: function (pos) {
+        move: async function (pos) {
           this.x = pos.x + 10;
           clamp(this);
           if (Math.abs(this.x) < 2) {
             this.s = 1;
+            reset();
+            await wait(500);
             transition();
+          } else {
+            reset();
           }
-          reset();
         },
         render: function () {
           ctx.strokeStyle = this.s ? '#fd9' : '#fff';
@@ -87,24 +99,30 @@ const screens = [
       this.text = '';
       this.i = setInterval(() => { this.a = !this.a; reset()}, 800);
     },
-    onkeydown: function (e) {
+    onkeydown: async function (e) {
       if (e.keyCode == 8) {
         this.text = this.text.slice(0, -1);
-      } else {
-        let letter = String.fromCharCode(e.keyCode).toLowerCase();
-        if (letter != ' ' && (letter < 'a' || letter > 'z')) {
-          return;
-        }
-        if (e.shiftKey) {
-          letter = letter.toUpperCase();
-        }
-        this.text += letter;
+        reset();
+        return;
+      }
 
-        if (this.text == 'You are lost') {
-          this.s = 1;
-          clearInterval(this.i);
-          transition();
-        }
+      let letter = String.fromCharCode(e.keyCode).toLowerCase();
+      if (letter != ' ' && (letter < 'a' || letter > 'z')) {
+        return;
+      }
+      if (e.shiftKey) {
+        letter = letter.toUpperCase();
+      }
+      this.text += letter;
+
+      if (this.text == 'You are lost') {
+        this.s = 1;
+        this.a = 0;
+        clearInterval(this.i);
+        reset();
+        await wait(500);
+        transition();
+        return;
       }
 
       reset();
@@ -122,23 +140,31 @@ const screens = [
   }),
   new Screen({
     init: function () {
-      this.s = 5;
+      this._s = 5;
     },
-    onkeydown: function (e) {
-      if (e.key === '+') {
-        ++this.s;
+    onkeydown: async function (e) {
+      if (!isNaN(parseFloat(e.key))) {
+        this._s = +e.key + 1;
       }
-      if (e.key === '-') {
-        --this.s;
-        if (this.s === 1) {
-          transition();
-        }
+      if (e.key == '+' || e.key == 'ArrowUp') {
+        ++this._s;
       }
-      reset();
+      if (e.key == '-' || e.key == 'ArrowDown') {
+        --this._s;
+      }
+
+      if (this._s == 1) {
+        this.s = 1;
+        reset();
+        await wait(500);
+        transition();
+      } else {
+        reset();
+      }
     },
     render: function () {
-      ctx.scale(this.s, this.s);
-      ctx.strokeStyle = this.s === 1 ? '#fd9' : '#fff';
+      ctx.scale(this._s, this._s);
+      ctx.strokeStyle = this.s ? '#fd9' : '#fff';
       drawTriangle(0, -20);
       drawText('You are lost', 'center', 0, 40);
     }
@@ -186,9 +212,10 @@ const screens = [
       drawText('You are lost', 'center', 0, 40);
 
       if (this.r > 50) {
+        this.s = 1;
         ctx.strokeStyle = '#fd9';
         drawTriangle(0, -20);
-        await wait(1000);
+        await wait(500);
         transition();
       }
     },
@@ -204,16 +231,15 @@ const screens = [
   }),
   new Screen({
     init: function () {
-      this.s = this.t = this.u = 0;
+      this.t = this.u = 0;
       this.i = setInterval(() => { ++this.t; this.s && ++this.u; reset() }, 33);
     },
     onclick: async function(e) {
-      if (!this.s && hasHitCircle(e, 240, 120, 20)) {
-        this.s = 1;
-        await wait(2000);
-        clearInterval(this.i);
-        transition();
-      }
+      if (!hasHitCircle(e, 240, 120, 20)) return;
+      this.s = 1;
+      await wait(2000);
+      clearInterval(this.i);
+      transition();
     },
     render: function () {
       const a = Math.sin(this.t / 24);
@@ -249,6 +275,9 @@ const screens = [
         });
       }
       this.t = new Draggable(-20, -20, {
+        init: function () {
+          this._s = [];
+        },
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
         },
@@ -263,7 +292,7 @@ const screens = [
           ctx.lineWidth = 1.5;
           drawTriangle(this.x, this.y);
           ctx.fillStyle = '#fd9';
-          this.s.forEach((_,i) => {
+          this._s.forEach((_,i) => {
             let x, y;
             if (i < 28) {
               x = this.x - 12;
@@ -280,15 +309,14 @@ const screens = [
           ctx.fillStyle = '#fff';
         }
       });
-      this.t.s = [];
     },
-    render: function () {
+    render: async function () {
       this.t.render();
       drawText('You are lost', 'center', 0, 40);
 
       this.d = this.d.filter(d => {
         if (Math.hypot(this.t.x - d.x, this.t.y - d.y) < 10) {
-          this.t.s[d.i] = 1;
+          this.t._s[d.i] = 1;
           return 0;
         }
         ctx.fillStyle = 'rgba(255,221,153,.7)';
@@ -297,6 +325,8 @@ const screens = [
       });
 
       if (!this.d.length) {
+        this.t.s = 1;
+        await wait(500);
         transition();
       }
     },
@@ -308,14 +338,15 @@ const screens = [
   new Screen({
     init: function () {
       const startAnim = () => {
-        const i = setInterval(() => {
+        const i = setInterval(async () => {
           this.o += 2;
           this.e.y += 2;
+          reset();
           if (this.o == 240) {
             clearInterval(i);
+            await wait(500);
             transition();
           }
-          reset();
         }, 33);
       };
 
@@ -323,7 +354,7 @@ const screens = [
       this.first = 1;
       this.e = new Draggable(0, 34, {
         isHit: function (e) {
-          return !this.h && hasHitCircle(e, this.x, this.y, 10);
+          return hasHitCircle(e, this.x, this.y, 10);
         },
         render: function () {
           ctx.save();
@@ -333,12 +364,11 @@ const screens = [
           ctx.restore();
         },
         move: function (pos) {
-          if (this.h) return;
           this.x = pos.x;
           this.y = pos.y;
           clamp(this);
           if (Math.hypot(this.x - 147, this.y - 14) < 4) {
-            this.x = this.h = 147;
+            this.x = this.s = 147;
             this.y = 14;
             startAnim();
           }
@@ -401,12 +431,10 @@ const screens = [
           }
 
           isHit(e) {
-            if (this.s) return 0;
             return hasHitCircle(e, this.x, this.y, 14);
           }
 
           move(pos) {
-            if (this.s) return;
             this.x = pos.x;
             this.y = pos.y;
             clamp(this);
@@ -421,13 +449,22 @@ const screens = [
       }
       this.l = [
         new Line(80, -80, 3, {x: -12, y: -21}, {
-          render: function () { drawLine(this.x, this.y, [0, -14, 0, 14]) }
+          render: function () {
+            ctx.strokeStyle = this.s ? '#fd9' : '#fff';
+            drawLine(this.x, this.y, [0, -14, 0, 14]);
+          }
         }),
         new Line(90, -50, 2, {x: 0, y: -13}, {
-          render: function () { drawLine(this.x, this.y, [-12, 7, 12, -7]) }
+          render: function () {
+            ctx.strokeStyle = this.s ? '#fd9' : '#fff';
+            drawLine(this.x, this.y, [-12, 7, 12, -7]);
+          }
         }),
         new Line(50, -70, 1, {x: 0, y: -28}, {
-          render: function () { drawLine(this.x, this.y, [-12, -7, 12, 7]) }
+          render: function () {
+            ctx.strokeStyle = this.s ? '#fd9' : '#fff';
+            drawLine(this.x, this.y, [-12, -7, 12, 7]);
+          }
         })
       ];
     },
@@ -435,12 +472,12 @@ const screens = [
       if (this.a > 200) {
         const {x, y} = getScreenPos(e);
         if (x >= -70 && x <= 150 && y >= -50 && y <= -20) {
-          transition();
           clearInterval(this.i);
+          transition();
         }
       }
     },
-    render: function () {
+    render: async function () {
       ctx.save();
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'rgba(0,0,0,.2)';
@@ -449,19 +486,22 @@ const screens = [
       ctx.restore();
 
       this.drawManual();
+      this.l.sort((a, b) => (a === dragging) - (b === dragging));
       this.l.forEach(l => l.render());
 
       drawText('You are lost!', 'center', 0, 40);
 
       if (this.o.length == 3) {
         if (this.o.join('') == '123') {
+          await wait(500);
           transition();
-        } else {
-            this.o = [];
-            this.a = 1;
-            metDarkLord = 1;
-            this.i = setInterval(reset, 33);
+          return;
         }
+
+        this.o = [];
+        this.a = 1;
+        metDarkLord = 1;
+        this.i = setInterval(reset, 33);
       }
 
       if (this.a) {
@@ -577,6 +617,7 @@ const screens = [
     init: function () {
       this.m = {x: 0, y: 0, t: 0};
       this.r = [];
+      this.c = 0;
       this.i = setInterval(() => {
         this.r = this.r.filter(r => {
           r.r += .1;
@@ -586,15 +627,15 @@ const screens = [
       }, 33);
     },
     onmousemove: async function (e) {
-      if (this.s) return;
       const {x, y} = getScreenPos(e);
 
       if (Math.hypot(x, y + 20) <= 16 && Math.hypot(this.m.x, this.m.y + 20) > 16) {
         const s = Math.hypot(x - this.m.x, y - this.m.y) / (+new Date() - this.m.t);
+        ++this.c;
         this.r.push({r: 1, s: s + 1});
-        if (s > 3) {
+        if (s > 3 || this.c == 30) {
           this.s = 1;
-          await wait(1000);
+          await wait(500);
           clearInterval(this.i);
           transition();
         }
@@ -623,7 +664,7 @@ const screens = [
   new Screen({
     init: function () {
       this.r = [];
-      this.s = [];
+      this._s = [];
       this.i = setInterval(() => {
         for (let i = 3; i--;) {
           this.r.push({
@@ -638,18 +679,18 @@ const screens = [
           r.y += r.sy;
 
           if (r.y >= 4 && r.y < 4 + 12 && Math.abs(r.x) < ctx.measureText('You are lost').width / 2 && Math.random() < .9) {
-            this.s.push({x: r.x, y: 24, r: 1});
+            this._s.push({x: r.x, y: 24, r: 1});
             return 0;
           }
 
           if (r.y >= -70 && r.y < -70 + 12 && r.x >= -170 && r.x <= -145) {
-            this.s.push({x: r.x, y: -65 + (r.x + 170) / 2, r: 1});
+            this._s.push({x: r.x, y: -65 + (r.x + 170) / 2, r: 1});
             return 0;
           }
 
           return r.y < 200;
         });
-        this.s = this.s.filter(s => {
+        this._s = this._s.filter(s => {
           s.r += .5;
           return s.r < 5;
         });
@@ -658,15 +699,15 @@ const screens = [
     },
     onclick: async function (e) {
       if (hasHitCircle(e, -160, -50, 16)) {
-        this.t = 1;
-        await wait(1000);
+        this.s = 1;
+        await wait(500);
         clearInterval(this.i);
         transition();
         reset();
       }
     },
     render: function () {
-        if (this.t) drawTriangle(-160, -50);
+        if (this.s) drawTriangle(-160, -50);
         drawText('You are lost', 'center', 0, 40);
         ctx.strokeStyle = 'rgba(255,255,255,.2)';
         ctx.lineWidth = 1;
@@ -674,7 +715,7 @@ const screens = [
           drawLine(r.x,r.y,[0,0,r.sx*2,r.sy*2]);
         });
         ctx.strokeStyle = 'rgba(255,255,255,.05)';
-        this.s.forEach(s => {
+        this._s.forEach(s => {
           drawRing(s.x,s.y,s.r);
         });
     },
@@ -695,7 +736,7 @@ const screens = [
         reset();
       }, 33);
     },
-    onclick: function (e) {
+    onclick: async function (e) {
       const {x, y} = getScreenPos(e);
       this.n = this.n.filter(n => {
         if (Math.abs(n.x - x) < (1+n.m) * 25 && Math.abs(n.y - y) < (1+n.m) * 40) {
@@ -706,6 +747,8 @@ const screens = [
       });
       this.n.sort((a, b) => a.m - b.m);
       if (!this.n.length) {
+        this.s = 1;
+        await wait(500);
         transition();
       }
     },

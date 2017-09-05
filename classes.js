@@ -2,8 +2,9 @@ let draggables = [];
 let dragging = false;
 
 onmousedown = e => {
+  if (transitioning || screens[currentScreen].s) return;
   draggables.some(draggable => {
-    if (!transitioning && draggable.isHit(e)) {
+    if (!draggable.s && draggable.isHit(e)) {
       dragging = draggable;
       return true;
     }
@@ -12,13 +13,13 @@ onmousedown = e => {
 
 onmousemove = e => {
   if (!dragging) {
-    if (!transitioning && screens[currentScreen].onmousemove) {
+    if (!transitioning && !screens[currentScreen].s && screens[currentScreen].onmousemove) {
       screens[currentScreen].onmousemove(e);
     }
 
     return;
   }
-  dragging.move(getScreenPos(e));
+  if (!dragging.s) dragging.move(getScreenPos(e));
 };
 
 onmouseup = onmouseout = onmouseleave = e => {
@@ -32,13 +33,14 @@ class Draggable {
     for (const i in methods) {
       this[i] = methods[i];
     }
+    if (this.init) this.init();
     draggables.push(this);
   }
 }
 
 for (const event of ['onclick', 'onkeydown']) {
   window[event] = e => {
-    if (!transitioning && screens[currentScreen][event]) {
+    if (!transitioning && !screens[currentScreen].s && screens[currentScreen][event]) {
       screens[currentScreen][event](e);
     }
   };
