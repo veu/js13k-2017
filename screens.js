@@ -399,7 +399,7 @@ const screens = [
   }),
   new Screen({
     onclick: () => transition(),
-    render: () => drawMessage('What if I hide the triangle?')
+    render: () => drawMessage('What if I hid the triangle?')
   }),
   new Screen({
     init: function () {
@@ -792,6 +792,106 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      this.a = -1 / 6 * Math.PI;
+      this.ai = 0;
+      this.at = 100;
+      this.p = [50, 180, 50 + Math.cos(this.a)*50, 180 + Math.sin(this.a)*50];
+      this.i = setInterval(async () => {
+        const i = 2 + this.ai * 2;
+        ++this.at;
+        if (this.at <= 100) {
+          this.a -= 2 / 3 * Math.PI / 100;
+        } else {
+          this.p[i] += Math.cos(this.a) * .5;
+          this.p[i + 1] += Math.sin(this.a) * .5;
+        }
+        if (this.ai == 0 && this.p[i] > 250 ||
+            this.ai == 1 && this.p[i] < 80) {
+          this.changeDir();
+        }
+        if (this.ai == 2 && (this.p[i + 1] - 180) >= Math.tan(-1/6*Math.PI) * (this.p[i] - 50)) {
+          this.s = 1;
+          clearInterval(this.i);
+          reset();
+          await wait(500);
+          transition();
+        } else {
+          reset();
+        }
+      }, 33);
+    },
+    onclick: function (e) {
+      if (this.ai == 2 || this.at < 130) return;
+      const x = this.p[2 + this.ai * 2] + Math.cos(this.a) * 28;
+      const y = this.p[3 + this.ai * 2] + Math.sin(this.a) * 28;
+
+      if (hasHitCircle(e, x, y, 30)) {
+        this.changeDir();
+      }
+    },
+    render: function () {
+      drawText('You are lost', 'center', 0, 40);
+      ctx.strokeStyle = '#fff';
+      if (this.s) {
+        drawLine(0, 0, this.p.slice(0, 2).concat(this.p.slice(6, 8)));
+        ctx.strokeStyle = '#fd9';
+        drawPolygon(0, 0, this.p.slice(2));
+      } else {
+        drawLine(0, 0, this.p);
+      }
+      this.drawSnail();
+    },
+    changeDir: function () {
+      this.p.push(this.p[2 + this.ai * 2], this.p[3 + this.ai * 2]);
+      this.at = 0;
+      ++this.ai;
+    },
+    drawSnail: function () {
+      ctx.save();
+      ctx.strokeStyle = '#fff';
+      ctx.translate(...this.p.slice(-2));
+      ctx.rotate(this.a);
+      ctx.beginPath();
+      ctx.moveTo(12, -5);
+      ctx.quadraticCurveTo(6, -4, 0, 0);
+      ctx.lineTo(30, 0);
+      ctx.quadraticCurveTo(35, 0, 40, -2);
+      ctx.quadraticCurveTo(45, -4, 50, -4);
+      ctx.quadraticCurveTo(52.5, -3, 56, -4);
+      ctx.quadraticCurveTo(57, -5, 56, -12);
+      ctx.quadraticCurveTo(53, -15, 40, -12);
+      ctx.quadraticCurveTo(30, -3, 12, -5);
+      ctx.quadraticCurveTo(9, -10, 12, -15);
+      ctx.quadraticCurveTo(22, -16, 32, -19);
+      ctx.quadraticCurveTo(39, -18, 40, -12);
+      ctx.moveTo(32, -19);
+      ctx.quadraticCurveTo(30, -27, 16, -23);
+      ctx.quadraticCurveTo(11, -20, 12, -15);
+      ctx.moveTo(15, -22);
+      ctx.quadraticCurveTo(18,-32,27,-24);
+
+      ctx.moveTo(55, -12);
+      ctx.lineTo(58, -22);
+      ctx.moveTo(55, -12);
+      ctx.lineTo(64, -14);
+
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.stroke();
+
+      drawEllipse(58, -22, 1.7);
+      drawEllipse(64, -14, 1.7);
+      ctx.restore();
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage('So cute.')
+  }),
+  new Screen({
+    init: function () {
       this.n = [];
       for (let i = 8; i--;) {
         this.n.push({x: (i/7)*400-250+Math.random()*100, y: -10+Math.random()*20, m: .5 + Math.random() / 2})
@@ -814,7 +914,7 @@ const screens = [
       this.n.sort((a, b) => a.m - b.m);
       if (!this.n.length) {
         this.s = 1;
-        await wait(500);
+        await wait(1000);
         transition();
       }
     },
