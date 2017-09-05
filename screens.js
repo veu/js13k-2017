@@ -156,7 +156,7 @@ const screens = [
     },
     render: function () {
       drawMessage('Let’s increase the difficulty a bit.');
-      drawText('Difficulty: ' + this.d, 'left', -ctx.measureText('Difficulty: 999').width / 2, 40);
+      drawText('Difficulty: ' + this.d, 'left', -ctx.measureText('Difficulty: 999').width / 2, 70);
     },
   }),
   new Screen({
