@@ -930,19 +930,35 @@ const screens = [
         ctx.translate(n.x, n.y);
         ctx.scale(1+n.m,2*(1+n.m));
 
-        ctx.beginPath();
-        ctx.moveTo(0,-20);
-        ctx.lineTo(-25,20);
-        ctx.quadraticCurveTo(0,26,25,20);
-
         const gradient = ctx.createRadialGradient(0, -10, 90, 0, -20, 0);
         gradient.addColorStop(1, `rgb(${50+n.m*150|0},${50+n.m*150|0},${50+n.m*150|0})`);
         gradient.addColorStop(0, `rgb(${50+n.m*50|0},${50+n.m*50|0},${50+n.m*50|0})`);
         ctx.fillStyle = gradient;
+
+        ctx.beginPath();
+        ctx.moveTo(16,6);
+        ctx.quadraticCurveTo(16,2,12,2);
+        ctx.lineTo(-12,2);
+        ctx.quadraticCurveTo(-16,2,-16,6);
+        ctx.lineTo(-17,12);
+        ctx.lineTo(-15,13);
+        ctx.lineTo(-18,20);
+        ctx.quadraticCurveTo(0,23,18,20);
+        ctx.lineTo(18,20);
+        ctx.lineTo(15,13);
+        ctx.lineTo(17,12);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0,-20);
+        ctx.lineTo(-12,4);
+        ctx.quadraticCurveTo(0,5,12,4);
         ctx.fill();
 
         ctx.fillStyle = '#000';
-        ctx.scale(1.5,n.h?.2:.5);
+        ctx.shadowColor = 'transparent';
+        ctx.translate(0, -4);
+        ctx.scale(1,n.h?.1:.3);
         ctx.fillText('.', 3, 0);
         ctx.fillText('.', -3, 0);
 
