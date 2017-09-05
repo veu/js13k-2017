@@ -90,10 +90,10 @@ const drawMessage = text => {
   ctx.fillStyle = '#000';
   ctx.fillRect(-width / 2, -height / 2, width, height);
   ctx.fillStyle = '#fff';
-  ctx.font = '20px Bookman Old Style, serif';
+  ctx.font = '18px Bookman Old Style, serif';
   drawText(text, 'center', 0, 0);
 
-  const w = ctx.measureText(text).width;
+  const w = Math.max(100, ctx.measureText(text).width);
   ctx.strokeStyle = '#999';
   ctx.strokeRect(-w / 2 - 20, -30, w + 40, 50);
   drawLine(-w / 2 - 25, -35, [w / 3, 0, -10, 0, -10, -10, 0, -10, 0, 20]);
