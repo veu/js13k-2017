@@ -575,6 +575,53 @@ const screens = [
   }),
   new Screen({
     init: function () {
+      this.m = {x: 0, y: 0, t: 0};
+      this.r = [];
+      this.i = setInterval(() => {
+        this.r = this.r.filter(r => {
+          r.r += .1;
+          return r.r < r.s * 2;
+        });
+        reset();
+      }, 33);
+    },
+    onmousemove: async function (e) {
+      if (this.s) return;
+      const {x, y} = getScreenPos(e);
+
+      if (Math.hypot(x, y + 20) <= 16 && Math.hypot(this.m.x, this.m.y + 20) > 16) {
+        const s = Math.hypot(x - this.m.x, y - this.m.y) / (+new Date() - this.m.t);
+        this.r.push({r: 1, s: s + 1});
+        if (s > 3) {
+          this.s = 1;
+          await wait(1000);
+          clearInterval(this.i);
+          transition();
+        }
+      }
+
+      this.m = {x, y, t: +new Date()};
+    },
+    render: function () {
+      this.r.forEach(r => {
+          ctx.save();
+          ctx.strokeStyle = `rgba(255,255,255,${(1-r.r/r.s)*.5})`;
+          ctx.translate(0, -20);
+          ctx.scale(r.r, r.r);
+          drawLine(0, 0, [-12, 8, -12, -14, 12, 0, -7, 11]);
+          ctx.restore();
+      });
+      ctx.strokeStyle = this.s ? '#fd9' : '#fff';
+      drawLine(0, -20, [-12, 8, -12, -14, 12, 0, -7, 11]);
+      drawText('You are lost', 'center', 0, 40);
+    },
+  }),
+  new Screen({
+    onclick: () => transition(),
+    render: () => drawMessage(metDarkLord ? 'One more hit would’ve summoned the Dark Lord again.' : 'Ding ding ding.')
+  }),
+  new Screen({
+    init: function () {
       this.r = [];
       this.s = [];
       this.i = setInterval(() => {
