@@ -467,6 +467,7 @@ const screens = [
 
       drawText('You ar', 'left', left, 40);
       drawText('lost', 'left', left + ctx.measureText('You are ').width, 40);
+      drawLine(0,-200,[0,0,10,0]);
       this.e.render();
 
       ctx.save();
