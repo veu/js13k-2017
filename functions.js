@@ -1,4 +1,4 @@
-const reset = onresize = onload = () => {
+const reset = onresize = () => {
   scale = Math.min(innerWidth / width, innerHeight / height);
   canvas.width = scale * width;
   canvas.height = scale * height;
