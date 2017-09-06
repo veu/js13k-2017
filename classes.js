@@ -38,7 +38,7 @@ class Draggable {
   }
 }
 
-for (const event of ['onclick', 'onkeydown']) {
+for (const event of ['onclick', 'onkeydown', 'onmouseup']) {
   window[event] = e => {
     if (!transitioning && !screens[currentScreen].s && screens[currentScreen][event]) {
       screens[currentScreen][event](e);

@@ -115,17 +115,14 @@ const screens = [
         isHit: function (e) {
           return hasHitCircle(e, this.x, this.y, 20);
         },
-        move: async function (pos) {
+        move: function (pos) {
           this.x = pos.x + 10;
           clamp(this);
           if (Math.abs(this.x) < 2) {
             this.s = 1;
-            reset();
-            await wait(500);
-            transition();
-          } else {
-            reset();
+            this.x = 0;
           }
+          reset();
         },
         render: function () {
           ctx.strokeStyle = this.s ? '#fd9' : '#fff';
@@ -135,6 +132,12 @@ const screens = [
           drawText('are lost', 'left', left + ctx.measureText('You ').width, 40);
         }
       });
+    },
+    onmouseup: async function () {
+      if (this.line.s) {
+        await wait(500);
+        transition();
+      }
     },
     render: function () {
       this.line.render();
@@ -377,6 +380,12 @@ const screens = [
         }
       });
     },
+    onmouseup: async function () {
+      if (this.t.s) {
+        await wait(500);
+        transition();
+      }
+    },
     render: async function () {
       this.t.render();
       drawText('You are lost', 'center', 0, 40);
@@ -393,8 +402,6 @@ const screens = [
 
       if (!this.d.length) {
         this.t.s = 1;
-        await wait(500);
-        transition();
       }
     },
   }),
@@ -404,19 +411,6 @@ const screens = [
   }),
   new Screen({
     init: function () {
-      const startAnim = () => {
-        const i = setInterval(async () => {
-          this.o += 2;
-          this.e.y += 2;
-          reset();
-          if (this.o == 240) {
-            clearInterval(i);
-            await wait(500);
-            transition();
-          }
-        }, 33);
-      };
-
       this.o = 0;
       this.first = 1;
       this.e = new Draggable(0, 34, {
@@ -437,12 +431,24 @@ const screens = [
           if (Math.hypot(this.x - 147, this.y - 14) < 4) {
             this.x = this.s = 147;
             this.y = 14;
-            startAnim();
           }
 
           reset();
         }
       });
+    },
+    onmouseup: function () {
+      if (!this.e.s) return;
+      const i = setInterval(async () => {
+        this.o += 2;
+        this.e.y += 2;
+        reset();
+        if (this.o == 240) {
+          clearInterval(i);
+          await wait(500);
+          transition();
+        }
+      }, 33);
     },
     render: function () {
       const left = -ctx.measureText('You are lost').width / 2;
@@ -545,6 +551,11 @@ const screens = [
         }
       }
     },
+    onmouseup: async function () {
+      if (this.o.join('') != '123') return;
+      await wait(500);
+      transition();
+    },
     render: async function () {
       ctx.save();
       ctx.lineWidth = 2;
@@ -561,8 +572,6 @@ const screens = [
 
       if (this.o.length == 3) {
         if (this.o.join('') == '123') {
-          await wait(500);
-          transition();
           return;
         }
 
