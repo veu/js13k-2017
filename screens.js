@@ -150,6 +150,7 @@ const screens = [
       }, 33);
     },
     onclick: async function () {
+      this.s = 1;
       await wait(500);
       clearInterval(this.i);
       transition();
